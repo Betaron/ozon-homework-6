@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Channels;
 using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
@@ -51,11 +52,11 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var t = StartListenGoodsProperties(stoppingToken);
+        var t = ConsumeGoodsProperties(stoppingToken);
 
         await foreach (var res in _goodPropertiesChanel.Reader.ReadAllAsync(stoppingToken))
         {
-
+            Debug.WriteLine("Read");
 
             _goodPropertiesConsumer.Get().Commit();
         }
@@ -72,7 +73,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
         base.Dispose();
     }
 
-    private Task StartListenGoodsProperties(CancellationToken token)
+    private Task ConsumeGoodsProperties(CancellationToken token)
     {
         return Task.Factory.StartNew(async () =>
         {
