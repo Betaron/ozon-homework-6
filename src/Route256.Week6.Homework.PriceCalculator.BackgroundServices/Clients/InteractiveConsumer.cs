@@ -12,11 +12,6 @@ internal class InteractiveConsumer<TModel, TOptions> : ClientBase, IDisposable
 
     private readonly IDisposable? _consumerOptionsChangeListner;
 
-    /// <summary>
-    /// Invoke when settings are changed
-    /// </summary>
-    public Action? OnChange { get; set; }
-
     public InteractiveConsumer(IOptions<TOptions> options)
     {
         _consumer = BuildConsumer<TModel, TOptions>(options.Value);
