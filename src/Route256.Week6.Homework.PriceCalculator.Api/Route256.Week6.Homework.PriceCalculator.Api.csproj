@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Route256.Week6.Homework.PriceCalculator.BackgroundServices\Route256.Week6.Homework.PriceCalculator.BackgroundServices.csproj" />
     <ProjectReference Include="..\Route256.Week6.Homework.PriceCalculator.Bll\Route256.Week6.Homework.PriceCalculator.Bll.csproj" />
     <ProjectReference Include="..\Route256.Week6.Homework.PriceCalculator.Dal\Route256.Week6.Homework.PriceCalculator.Dal.csproj" />
   </ItemGroup>
