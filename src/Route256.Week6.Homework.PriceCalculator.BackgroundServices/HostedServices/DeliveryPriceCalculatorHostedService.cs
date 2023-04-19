@@ -30,8 +30,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
         {
             if (_goodPropertiesTopic != value)
             {
-                _goodPropertiesConsumer.Get().Subscription.Remove(_goodPropertiesTopic);
-                _goodPropertiesConsumer.Get().Subscribe(value);
+                _goodPropertiesConsumer.SwitchTopicTo(value);
                 _goodPropertiesTopic = value;
             }
         }
@@ -56,12 +55,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 
         await foreach (var res in _goodPropertiesChanel.Reader.ReadAllAsync(stoppingToken))
         {
-            await Console.Out.WriteLineAsync(
-@$"{res.Message.Value.Width}
-{res.Message.Value.Height}
-{res.Message.Value.Length}
-{res.Message.Value.Weight}
-+++++++++++++++++++++++");
+
 
             _goodPropertiesConsumer.Get().Commit();
         }

@@ -30,4 +30,10 @@ internal class InteractiveConsumer<TModel, TOptions> : ClientBase, IDisposable
     }
 
     public IConsumer<Ignore, TModel> Get() => _consumer;
+
+    public void SwitchTopicTo(string topic)
+    {
+        _consumer.Unsubscribe();
+        _consumer.Subscribe(topic);
+    }
 }
