@@ -7,6 +7,7 @@ using Route256.Week6.Homework.PriceCalculator.Bll.Validators;
 namespace Route256.Week6.Homework.PriceCalculator.Bll.Commands;
 
 public record CalculateDeliveryPriceWithDlqCommand(
+    long Key,
     GoodModel Good)
     : IRequest<GoodDeliveryPriceModel>;
 
@@ -29,7 +30,7 @@ public class CalculateDeliveryPriceWithDlqCommandHandler
         var validateResult = _propertiesValidator.Validate(request.Good);
         if (!validateResult.IsValid)
         {
-            await _calculationService.SaveInvalidRequestInDlq(request.Good, cancellationToken);
+            await _calculationService.SaveInvalidRequestInDlq(request.Key, request.Good, cancellationToken);
             throw new ValidationException(validateResult.Errors);
         }
 

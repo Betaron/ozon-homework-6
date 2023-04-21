@@ -86,10 +86,11 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 
         var consumeTask = ConsumeGoodsProperties(stoppingToken);
 
-        await foreach (var message in _goodPropertiesChanel.Reader.ReadAllAsync(stoppingToken))
+        await foreach (var result in _goodPropertiesChanel.Reader.ReadAllAsync(stoppingToken))
         {
-            var request = message.Message.Value;
+            var request = result.Message.Value;
             var command = new CalculateDeliveryPriceWithDlqCommand(
+                result.Message.Key,
                 new GoodModel(
                     request.GoodId,
                     new GoodPropertiesModel(
@@ -99,13 +100,15 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                         request.Width)));
             try
             {
-                var result = await mediator.Send(command, stoppingToken);
+                var price = await mediator.Send(command, stoppingToken);
 
                 await _deliveryPriceProducer.QuicProduce(
                     new GoodPriceResponse(
-                        result.GoodId,
-                        result.Price),
+                        price.GoodId,
+                        price.Price),
                     stoppingToken);
+
+                _logger.LogInformation("Calculate and produce success.");
             }
             catch (ValidationException validationEx)
             {
@@ -121,7 +124,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                 continue;
             }
 
-            _goodPropertiesConsumer.Get().Commit(message);
+            _goodPropertiesConsumer.Get().Commit(result);
         }
 
         await consumeTask;

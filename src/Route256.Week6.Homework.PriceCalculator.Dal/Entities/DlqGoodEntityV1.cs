@@ -2,6 +2,7 @@ namespace Route256.Week6.Homework.PriceCalculator.Dal.Entities;
 
 public record DlqGoodEntityV1
 {
+    public long Key { get; set; }
     public long Id { get; set; }
     public double Height { get; set; }
     public double Length { get; set; }

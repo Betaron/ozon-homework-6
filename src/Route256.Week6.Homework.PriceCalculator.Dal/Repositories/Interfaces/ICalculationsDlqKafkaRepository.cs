@@ -4,5 +4,5 @@ namespace Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
 public interface ICalculationsDlqKafkaRepository
 {
-    public Task Produce(DlqGoodEntityV1 entity, CancellationToken token);
+    public Task Produce(long key, DlqGoodEntityV1 entity, CancellationToken token);
 }

@@ -60,7 +60,7 @@ public class CalculationService : ICalculationService
         return calculationIds.Single();
     }
 
-    public Task SaveInvalidRequestInDlq(GoodModel goodModel, CancellationToken cancellationToken)
+    public Task SaveInvalidRequestInDlq(long key, GoodModel goodModel, CancellationToken cancellationToken)
     {
         var entity = new DlqGoodEntityV1
         {
@@ -71,7 +71,7 @@ public class CalculationService : ICalculationService
             Width = goodModel.Properties.Width,
         };
 
-        return _calculationDlqKafkaRepository.Produce(entity, cancellationToken);
+        return _calculationDlqKafkaRepository.Produce(key, entity, cancellationToken);
     }
 
     public decimal CalculatePriceByVolume(

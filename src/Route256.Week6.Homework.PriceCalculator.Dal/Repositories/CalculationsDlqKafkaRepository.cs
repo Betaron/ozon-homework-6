@@ -32,7 +32,7 @@ public class CalculationsDlqKafkaRepository : ICalculationsDlqKafkaRepository, I
         _topicsOptionsChangeListner?.Dispose();
     }
 
-    public async Task Produce(DlqGoodEntityV1 entity, CancellationToken token)
+    public async Task Produce(long key, DlqGoodEntityV1 entity, CancellationToken token)
     {
         using var producer = new ProducerBuilder<long, DlqGoodEntityV1>(
             new ProducerConfig()
@@ -47,7 +47,7 @@ public class CalculationsDlqKafkaRepository : ICalculationsDlqKafkaRepository, I
             _dlqTopic,
             new()
             {
-                Key = entity.Id,
+                Key = key,
                 Value = entity
             },
             token);

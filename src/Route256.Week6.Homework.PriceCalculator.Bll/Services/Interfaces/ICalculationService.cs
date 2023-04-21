@@ -9,6 +9,7 @@ public interface ICalculationService
         CancellationToken cancellationToken);
 
     Task SaveInvalidRequestInDlq(
+        long key,
         GoodModel goodModel,
         CancellationToken cancellationToken);
 
