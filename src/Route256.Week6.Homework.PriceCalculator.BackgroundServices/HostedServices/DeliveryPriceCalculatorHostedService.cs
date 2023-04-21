@@ -112,14 +112,14 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             }
             catch (ValidationException validationEx)
             {
-                _logger.LogWarning("Consume not valid data" +
+                _logger.LogWarning("Consume invalid data.\n" +
                     "Invalid message was produced in dlq.", validationEx.Errors);
             }
             catch (Exception ProduceEx)
                 when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
             {
                 _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
-                            $"\t{ProduceEx.Message}\n",
+                            $"{ProduceEx.Message}",
                             ProduceEx.StackTrace);
                 continue;
             }
@@ -169,14 +169,14 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                         if (await ProduceCorruptedIntoDlq(result, token))
                         {
                             _logger.LogWarning($"Consume falure: {ConsumeEx.InnerException?.GetType()}\n" +
-                            $"{ConsumeEx.InnerException?.Message}" +
+                            $"{ConsumeEx.InnerException?.Message}\n" +
                             "Corrupted message was produced in dlq.");
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
-                            $"{ex.Message}\n",
+                            $"{ex.Message}",
                             ex.StackTrace);
                         break;
                     }
