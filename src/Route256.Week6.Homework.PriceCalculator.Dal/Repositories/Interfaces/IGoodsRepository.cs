@@ -1,14 +1,14 @@
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
 public interface IGoodsRepository : IDbRepository
 {
     Task<long[]> Add(
-        GoodEntityV1[] goods, 
+        GoodEntityV1[] goods,
         CancellationToken token);
 
     Task<GoodEntityV1[]> Query(
-        long userId,        
+        long userId,
         CancellationToken token);
 }

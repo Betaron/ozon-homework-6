@@ -1,25 +1,25 @@
 using Confluent.Kafka;
-using Route256.Week6.Homework.PriceCalculator.BackgroundServices.Configurations.Interfaces;
-using Route256.Week6.Homework.PriceCalculator.BackgroundServices.Utills;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Utills;
 
 namespace Route256.Week6.Homework.PriceCalculator.BackgroundServices.Clients;
 
 internal class ClientBase
 {
-    protected static IConsumer<Ignore, TModel> BuildConsumer<TModel, TOptions>(TOptions options)
+    protected static IConsumer<TKey, TModel> BuildConsumer<TKey, TModel, TOptions>(TOptions options)
         where TModel : class
         where TOptions : IClientConfigMutable
     {
-        return new ConsumerBuilder<Ignore, TModel>(options.ToClientConfig())
+        return new ConsumerBuilder<TKey, TModel>(options.ToClientConfig())
             .SetValueDeserializer(new JsonValueSerializer<TModel>())
             .Build();
     }
 
-    protected IProducer<Ignore, TModel> BuildProducer<TModel, TOptions>(TOptions options)
+    protected IProducer<TKey, TModel> BuildProducer<TKey, TModel, TOptions>(TOptions options)
         where TModel : class
         where TOptions : IClientConfigMutable
     {
-        return new ProducerBuilder<Ignore, TModel>(options.ToClientConfig())
+        return new ProducerBuilder<TKey, TModel>(options.ToClientConfig())
             .SetValueSerializer(new JsonValueSerializer<TModel>())
             .Build();
     }

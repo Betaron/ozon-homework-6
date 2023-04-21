@@ -3,8 +3,8 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
 namespace Route256.Week5.Workshop.PriceCalculator.IntegrationTests.Fixtures
 {

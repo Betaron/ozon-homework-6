@@ -1,6 +1,6 @@
 using AutoBogus;
 using Bogus;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Models;
+using Route256.Week6.Homework.PriceCalculator.Dal.Models;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
 

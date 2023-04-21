@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,10 +8,15 @@
 
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="2.1.0" />
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Route256.Week6.Homework.PriceCalculator.Bll\Route256.Week6.Homework.PriceCalculator.Bll.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,10 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using Npgsql.NameTranslation;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Settings;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Infrastructure;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Infrastructure;
 
 public static class Postgres
 {
@@ -19,7 +19,7 @@ public static class Postgres
     {
         var mapper = NpgsqlConnection.GlobalTypeMapper;
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-        
+
         mapper.MapComposite<CalculationEntityV1>("calculations_v1", Translator);
         mapper.MapComposite<GoodEntityV1>("goods_v1", Translator);
     }

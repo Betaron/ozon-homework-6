@@ -1,4 +1,4 @@
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Settings;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
 public record DalOptions
 {

@@ -1,8 +1,8 @@
 using System.Linq;
 using AutoBogus;
 using Bogus;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Commands;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Commands;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
 
@@ -31,7 +31,7 @@ public static class CalculateDeliveryPriceCommandFaker
     
     public static CalculateDeliveryPriceCommand WithGoods(
         this CalculateDeliveryPriceCommand src, 
-        GoodModel[] goods)
+        GoodPropertiesModel[] goods)
     {
         return src with { Goods = goods };
     }

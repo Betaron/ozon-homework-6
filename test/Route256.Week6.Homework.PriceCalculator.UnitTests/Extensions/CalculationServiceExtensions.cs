@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading;
 using Moq;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
 
@@ -27,7 +27,7 @@ public static class CalculationServiceExtensions
         decimal price)
     {
         service.Setup(p =>
-                p.CalculatePriceByVolume(It.IsAny<GoodModel[]>(), 
+                p.CalculatePriceByVolume(It.IsAny<GoodPropertiesModel[]>(), 
                     out volume))
             .Returns(price);
 
@@ -40,7 +40,7 @@ public static class CalculationServiceExtensions
         decimal price)
     {
         service.Setup(p =>
-                p.CalculatePriceByWeight(It.IsAny<GoodModel[]>(), 
+                p.CalculatePriceByWeight(It.IsAny<GoodPropertiesModel[]>(), 
                     out weight))
             .Returns(price);
 
@@ -74,11 +74,11 @@ public static class CalculationServiceExtensions
     
     public static Mock<ICalculationService> VerifyCalculatePriceByVolumeWasCalledOnce(
         this Mock<ICalculationService> service,
-        GoodModel[] model)
+        GoodPropertiesModel[] model)
     {
         service.Verify(p =>
                 p.CalculatePriceByVolume(
-                    It.Is<GoodModel[]>(x => x.SequenceEqual(model)),
+                    It.Is<GoodPropertiesModel[]>(x => x.SequenceEqual(model)),
                     out It.Ref<double>.IsAny),
             Times.Once);
         
@@ -87,11 +87,11 @@ public static class CalculationServiceExtensions
     
     public static Mock<ICalculationService> VerifyCalculatePriceByWeightWasCalledOnce(
         this Mock<ICalculationService> service,
-        GoodModel[] model)
+        GoodPropertiesModel[] model)
     {
         service.Verify(p =>
                 p.CalculatePriceByWeight(
-                    It.Is<GoodModel[]>(x => x.SequenceEqual(model)),
+                    It.Is<GoodPropertiesModel[]>(x => x.SequenceEqual(model)),
                     out It.Ref<double>.IsAny),
             Times.Once);
 

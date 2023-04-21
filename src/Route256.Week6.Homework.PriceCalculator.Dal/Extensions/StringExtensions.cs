@@ -1,7 +1,6 @@
 using System.Text;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Api.Extensions;
-
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
 public static class StringExtensions
 {
     public static string ToSnakeCase(this string text)
@@ -12,17 +11,20 @@ public static class StringExtensions
             Length = 0
         };
         sb.Append(char.ToLowerInvariant(text[0]));
-        for(int i = 1; i < text.Length; ++i) {
+        for (var i = 1; i < text.Length; ++i)
+        {
             var c = text[i];
-            if(char.IsUpper(c)) 
+            if (char.IsUpper(c))
             {
                 sb.Append('_');
                 sb.Append(char.ToLowerInvariant(c));
-            } else 
+            }
+            else
             {
                 sb.Append(c);
             }
         }
         return sb.ToString();
     }
+
 }

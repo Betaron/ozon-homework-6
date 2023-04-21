@@ -1,6 +1,6 @@
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
+namespace Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
 
 public interface ICalculationService
 {
@@ -8,12 +8,16 @@ public interface ICalculationService
         SaveCalculationModel saveCalculation,
         CancellationToken cancellationToken);
 
+    Task SaveInvalidRequestInDlq(
+        GoodModel goodModel,
+        CancellationToken cancellationToken);
+
     decimal CalculatePriceByVolume(
-        GoodModel[] goods,
+        GoodPropertiesModel[] goods,
         out double volume);
 
     public decimal CalculatePriceByWeight(
-        GoodModel[] goods,
+        GoodPropertiesModel[] goods,
         out double weight);
 
     Task<QueryCalculationModel[]> QueryCalculations(

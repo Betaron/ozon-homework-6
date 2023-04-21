@@ -1,16 +1,16 @@
 using MediatR;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Bll.Extensions;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Bll.Commands;
+namespace Route256.Week6.Homework.PriceCalculator.Bll.Commands;
 
 public record CalculateDeliveryPriceCommand(
         long UserId,
-        GoodModel[] Goods)
+        GoodPropertiesModel[] Goods)
     : IRequest<CalculateDeliveryPriceResult>;
 
-public class CalculateDeliveryPriceCommandHandler 
+public class CalculateDeliveryPriceCommandHandler
     : IRequestHandler<CalculateDeliveryPriceCommand, CalculateDeliveryPriceResult>
 {
     private readonly ICalculationService _calculationService;
@@ -20,9 +20,9 @@ public class CalculateDeliveryPriceCommandHandler
     {
         _calculationService = calculationService;
     }
-    
+
     public async Task<CalculateDeliveryPriceResult> Handle(
-        CalculateDeliveryPriceCommand request, 
+        CalculateDeliveryPriceCommand request,
         CancellationToken cancellationToken)
     {
         request.EnsureHasGoods();
@@ -32,14 +32,14 @@ public class CalculateDeliveryPriceCommandHandler
         var resultPrice = Math.Max(volumePrice, weightPrice);
 
         var model = new SaveCalculationModel(
-            request.UserId, 
-            volume, 
+            request.UserId,
+            volume,
             weight,
-            resultPrice, 
+            resultPrice,
             request.Goods);
 
         var calculationId = await _calculationService.SaveCalculation(
-            model, 
+            model,
             cancellationToken);
 
         return new CalculateDeliveryPriceResult(

@@ -1,6 +1,6 @@
 using AutoBogus;
 using Bogus;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Queries;
+using Route256.Week6.Homework.PriceCalculator.Bll.Queries;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
 

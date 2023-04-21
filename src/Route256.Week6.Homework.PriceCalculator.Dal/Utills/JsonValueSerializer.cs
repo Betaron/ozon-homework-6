@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Confluent.Kafka;
 
-namespace Route256.Week6.Homework.PriceCalculator.BackgroundServices.Utills;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Utills;
 
 public sealed class JsonValueSerializer<T> : ISerializer<T>, IDeserializer<T>
 {

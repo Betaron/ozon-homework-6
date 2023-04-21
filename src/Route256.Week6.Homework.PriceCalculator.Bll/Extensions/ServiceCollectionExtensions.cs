@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Bll.Extensions;
+namespace Route256.Week6.Homework.PriceCalculator.Bll.Extensions;
 
 public static class ServiceCollectionExtensions
 {
@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
         services.AddTransient<ICalculationService, CalculationService>();
-        
+
         return services;
     }
 }

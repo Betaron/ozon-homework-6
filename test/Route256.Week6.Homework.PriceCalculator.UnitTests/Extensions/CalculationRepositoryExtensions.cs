@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Transactions;
 using Moq;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Models;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Models;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
 

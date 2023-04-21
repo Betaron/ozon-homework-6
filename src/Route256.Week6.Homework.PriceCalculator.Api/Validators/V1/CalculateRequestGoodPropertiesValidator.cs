@@ -1,7 +1,7 @@
 using FluentValidation;
-using Route256.Week5.Workshop.PriceCalculator.Api.Requests.V1;
+using Route256.Week6.Homework.PriceCalculator.Api.Requests.V1;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Api.Validators.V1;
+namespace Route256.Week6.Homework.PriceCalculator.Api.Validators.V1;
 
 public class CalculateRequestGoodPropertiesValidator : AbstractValidator<CalculateRequest.GoodProperties>
 {

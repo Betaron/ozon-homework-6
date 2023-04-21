@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Exceptions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
 using Route256.Week5.Workshop.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.PriceCalculator.Bll.Exceptions;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
 using Xunit;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.HandlersTests;
@@ -83,7 +83,7 @@ public class CalculateDeliveryPriceCommandHandlerTests
     {
         //arrange
         var command = CalculateDeliveryPriceCommandFaker.Generate()
-            .WithGoods(Array.Empty<GoodModel>());
+            .WithGoods(Array.Empty<GoodPropertiesModel>());
         
         var builder = new CalculateDeliveryPriceHandlerBuilder();
         var handler = builder.Build();

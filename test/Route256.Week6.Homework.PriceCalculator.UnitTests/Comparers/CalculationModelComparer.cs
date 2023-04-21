@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
 

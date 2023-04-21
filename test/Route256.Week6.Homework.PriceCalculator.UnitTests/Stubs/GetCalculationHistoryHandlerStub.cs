@@ -1,6 +1,6 @@
 using Moq;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Queries;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Bll.Queries;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Stubs;
 

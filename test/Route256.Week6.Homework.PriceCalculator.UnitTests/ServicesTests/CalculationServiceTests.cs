@@ -2,12 +2,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Builders;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
 using Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
 using Route256.Week5.Workshop.TestingInfrastructure.Creators;
 using Route256.Week5.Workshop.TestingInfrastructure.Fakers;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services;
 using Xunit;
 
 namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.ServicesTests;

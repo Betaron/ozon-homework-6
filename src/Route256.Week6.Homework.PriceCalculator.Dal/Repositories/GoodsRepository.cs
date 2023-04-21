@@ -1,10 +1,10 @@
 using Dapper;
 using Microsoft.Extensions.Options;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Settings;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Repositories;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Repositories;
 
 public class GoodsRepository : BaseRepository, IGoodsRepository
 {
@@ -12,9 +12,9 @@ public class GoodsRepository : BaseRepository, IGoodsRepository
         IOptions<DalOptions> dalSettings) : base(dalSettings.Value)
     {
     }
-    
+
     public async Task<long[]> Add(
-        GoodEntityV1[] goods, 
+        GoodEntityV1[] goods,
         CancellationToken token)
     {
         const string sqlQuery = @"
@@ -23,19 +23,19 @@ select user_id, width, height, length, weight
   from UNNEST(@Goods)
 returning id;
 ";
-        
+
         var sqlQueryParams = new
         {
             Goods = goods
         };
-        
+
         await using var connection = await GetAndOpenConnection();
         var ids = await connection.QueryAsync<long>(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
                 cancellationToken: token));
-        
+
         return ids
             .ToArray();
     }
@@ -54,7 +54,7 @@ select id
   from goods
  where user_id = @UserId;
 ";
-        
+
         var sqlQueryParams = new
         {
             UserId = userId
@@ -66,7 +66,7 @@ select id
                 sqlQuery,
                 sqlQueryParams,
                 cancellationToken: token));
-        
+
         return goods
             .ToArray();
     }

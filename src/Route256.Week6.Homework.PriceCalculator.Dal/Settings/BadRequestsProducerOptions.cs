@@ -1,14 +1,15 @@
 using Confluent.Kafka;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings.Interfaces;
 
-namespace Route256.Week6.Homework.PriceCalculator.BackgroundServices.Configurations;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
-public record BadRequestsProducesesOptions
+public class BadRequestsProducerOptions : IClientConfigMutable
 {
     public string BootstrapServers { get; set; }
     public Acks Acks { get; set; }
 
     public ClientConfig ToClientConfig() =>
-        new ConsumerConfig()
+        new ProducerConfig()
         {
             BootstrapServers = BootstrapServers,
             Acks = Acks

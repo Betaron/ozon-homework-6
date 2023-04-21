@@ -1,4 +1,4 @@
-namespace Route256.Week5.Workshop.PriceCalculator.Api.Requests.V1;
+namespace Route256.Week6.Homework.PriceCalculator.Api.Requests.V1;
 
 /// <summary>
 /// Товары. чью цену транспортировки нужно расчитать

@@ -1,9 +1,9 @@
 using Confluent.Kafka;
-using Route256.Week6.Homework.PriceCalculator.BackgroundServices.Configurations.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings.Interfaces;
 
-namespace Route256.Week6.Homework.PriceCalculator.BackgroundServices.Configurations;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
-public sealed class GoodsPropertiesConsumerOptions : IClientConfigMutable
+public class GoodsPropertiesConsumerOptions : IClientConfigMutable
 {
     public string BootstrapServers { get; set; }
     public string GroupId { get; set; }
