@@ -45,7 +45,7 @@ internal class GoodsHelper
             topic,
             new Message<long, GoodModel>
             {
-                Key = good.Id,
+                Key = good.GoodId,
                 Value = good
             },
             token);
