@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHostedServices(this IServiceCollection services)
     {
         services.AddHostedService<DeliveryPriceCalculatorHostedService>();
+        services.AddHostedService<AnomalousPricesDetectorHostedService>();
 
         return services;
     }

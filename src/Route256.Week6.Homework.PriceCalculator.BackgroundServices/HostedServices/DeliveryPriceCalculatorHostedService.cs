@@ -18,8 +18,8 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 {
     private readonly IDisposable? _topicsOptionsChangeListner;
 
-    private readonly Channel<ConsumeResult<long, GoodRequest>> _goodPropertiesChanel =
-        Channel.CreateUnbounded<ConsumeResult<long, GoodRequest>>(
+    private readonly Channel<ConsumeResult<long, GoodDto>> _goodPropertiesChanel =
+        Channel.CreateUnbounded<ConsumeResult<long, GoodDto>>(
             new UnboundedChannelOptions()
             {
                 SingleReader = true,
@@ -27,9 +27,9 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             });
 
     private readonly InteractiveConsumer
-        <long, GoodRequest, GoodsPropertiesConsumerOptions> _goodPropertiesConsumer;
+        <long, GoodDto, GoodsPropertiesConsumerOptions> _goodPropertiesConsumer;
     private readonly InteractiveProducer
-        <long, GoodPriceResponse, DeliveryPriceProducerOptions> _deliveryPriceProducer;
+        <long, GoodPriceDto, DeliveryPriceProducerOptions> _deliveryPriceProducer;
 
     private IProducer<byte[], byte[]> _rawGoodPropertiesDlqProducer;
 
@@ -103,7 +103,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                 var price = await mediator.Send(command, stoppingToken);
 
                 await _deliveryPriceProducer.QuicProduce(
-                    new GoodPriceResponse(
+                    new GoodPriceDto(
                         price.GoodId,
                         price.Price),
                     stoppingToken);
@@ -116,7 +116,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                     "Invalid message was produced in dlq.", validationEx.Errors);
             }
             catch (Exception ProduceEx)
-                when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
+                when (ProduceEx is ProduceException<long, GoodPriceDto> or ArgumentException)
             {
                 _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
                             $"{ProduceEx.Message}",

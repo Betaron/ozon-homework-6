@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ICalculationRepository, CalculationRepository>();
         services.AddScoped<IGoodsRepository, GoodsRepository>();
+        services.AddScoped<IGoodsDeliveryAnomalyRepository, GoodsDeliveryAnomalyRepository>();
 
         services.AddSingleton<ICalculationsDlqKafkaRepository, CalculationsDlqKafkaRepository>();
 
@@ -28,6 +29,8 @@ public static class ServiceCollectionExtensions
             config.GetSection("KafkaOptions:ClientsOptions:BadRequestsProducesesOptions"));
         services.Configure<DeliveryPriceProducerOptions>(
             config.GetSection("KafkaOptions:ClientsOptions:DeliveryPriceProducerOptions"));
+        services.Configure<DeliveryPriceConsumerOptions>(
+            config.GetSection("KafkaOptions:ClientsOptions:DeliveryPriceConsumerOptions"));
         services.Configure<GoodsPropertiesConsumerOptions>(
             config.GetSection("KafkaOptions:ClientsOptions:GoodsPropertiesConsumerOptions"));
         services.Configure<Topics>(
