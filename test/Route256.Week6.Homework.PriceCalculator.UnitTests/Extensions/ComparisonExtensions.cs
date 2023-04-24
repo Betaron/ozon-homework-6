@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.Extensions;
 
 public static class ComparisonExtensions
 {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
 using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
-namespace Route256.Week5.Workshop.PriceCalculator.IntegrationTests.Fixtures
+namespace Route256.Week6.Homework.PriceCalculator.IntegrationTests.Fixtures
 {
     public class TestFixture
     {
@@ -28,7 +28,7 @@ namespace Route256.Week5.Workshop.PriceCalculator.IntegrationTests.Fixtures
                         .AddDalRepositories();
                 })
                 .Build();
-            
+
             ClearDatabase(host);
             host.MigrateUp();
 
