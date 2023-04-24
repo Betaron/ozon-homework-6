@@ -107,26 +107,23 @@ public class AnomalousPricesDetectorHostedService : BackgroundService, IDisposab
             _deliveryPricesConsumer.Get().Subscribe(PricesTopic);
             var channelWriter = _goodPricesChanel.Writer;
 
-            while (await channelWriter.WaitToWriteAsync())
+            while (!token.IsCancellationRequested)
             {
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        var result = _deliveryPricesConsumer.Get().Consume(token);
+                    var result = _deliveryPricesConsumer.Get().Consume(token);
 
-                        if (!channelWriter.TryWrite(result))
-                        {
-                            await channelWriter.WriteAsync(result);
-                        }
-                    }
-                    catch (Exception ex)
+                    if (!channelWriter.TryWrite(result))
                     {
-                        _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
-                            $"{ex.Message}" +
-                            ex.StackTrace);
-                        break;
+                        await channelWriter.WriteAsync(result);
                     }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
+                        $"{ex.Message}" +
+                        ex.StackTrace);
+                    break;
                 }
             }
         }).Unwrap();
