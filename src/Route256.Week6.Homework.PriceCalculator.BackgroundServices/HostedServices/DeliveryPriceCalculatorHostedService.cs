@@ -148,38 +148,35 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             _goodPropertiesConsumer.Get().Subscribe(GoodPropertiesTopic);
             var channelWriter = _goodPropertiesChanel.Writer;
 
-            while (await channelWriter.WaitToWriteAsync())
+            while (!token.IsCancellationRequested)
             {
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        var result = _goodPropertiesConsumer.Get().Consume(token);
+                    var result = _goodPropertiesConsumer.Get().Consume(token);
 
-                        if (!channelWriter.TryWrite(result))
-                        {
-                            await channelWriter.WriteAsync(result);
-                        }
-                    }
-                    catch (ConsumeException ConsumeEx)
-                        when (ConsumeEx.InnerException is JsonException or ArgumentException)
+                    if (!channelWriter.TryWrite(result))
                     {
-                        var result = ConsumeEx.ConsumerRecord;
+                        await channelWriter.WriteAsync(result);
+                    }
+                }
+                catch (ConsumeException ConsumeEx)
+                    when (ConsumeEx.InnerException is JsonException or ArgumentException)
+                {
+                    var result = ConsumeEx.ConsumerRecord;
 
-                        if (await ProduceCorruptedIntoDlq(result, token))
-                        {
-                            _logger.LogWarning($"Consume falure: {ConsumeEx.InnerException?.GetType()}\n" +
-                            $"{ConsumeEx.InnerException?.Message}\n" +
-                            "Corrupted message was produced in dlq.");
-                        }
-                    }
-                    catch (Exception ex)
+                    if (await ProduceCorruptedIntoDlq(result, token))
                     {
-                        _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
-                            $"{ex.Message}",
-                            ex.StackTrace);
-                        break;
+                        _logger.LogWarning($"Consume falure: {ConsumeEx.InnerException?.GetType()}\n" +
+                        $"{ConsumeEx.InnerException?.Message}\n" +
+                        "Corrupted message was produced in dlq.");
                     }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
+                        $"{ex.Message}",
+                        ex.StackTrace);
+                    break;
                 }
             }
         }).Unwrap();
