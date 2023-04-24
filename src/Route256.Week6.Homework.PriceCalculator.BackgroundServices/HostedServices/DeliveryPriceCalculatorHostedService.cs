@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Confluent.Kafka;
@@ -112,14 +113,21 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             }
             catch (ValidationException validationEx)
             {
+                var sb = new StringBuilder();
+                foreach (var item in validationEx.Errors)
+                {
+                    sb.AppendLine(item.ErrorMessage);
+                }
                 _logger.LogWarning("Consume invalid data.\n" +
-                    "Invalid message was produced in dlq.", validationEx.Errors);
+                    "Invalid message was produced in dlq." +
+                    "ValidationErrors:\n" +
+                    sb);
             }
             catch (Exception ProduceEx)
                 when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
             {
                 _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
-                            $"{ProduceEx.Message}",
+                            $"{ProduceEx.Message}" +
                             ProduceEx.StackTrace);
                 continue;
             }
@@ -174,7 +182,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                 catch (Exception ex)
                 {
                     _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
-                        $"{ex.Message}",
+                        $"{ex.Message}\n" +
                         ex.StackTrace);
                     break;
                 }
@@ -205,7 +213,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             when (ProduceEx is ProduceException<byte[], byte[]> or ArgumentException)
         {
             _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
-                        $"\t{ProduceEx.Message}\n",
+                        $"\t{ProduceEx.Message}\n" +
                         ProduceEx.StackTrace);
 
             return false;
