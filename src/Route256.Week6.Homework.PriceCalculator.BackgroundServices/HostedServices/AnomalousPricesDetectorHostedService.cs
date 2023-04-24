@@ -123,7 +123,7 @@ public class AnomalousPricesDetectorHostedService : BackgroundService, IDisposab
                     catch (Exception ex)
                     {
                         _logger.LogError($"Consume error: {ex.InnerException?.GetType()}\n" +
-                            $"{ex.Message}",
+                            $"{ex.Message}" +
                             ex.StackTrace);
                         break;
                     }
