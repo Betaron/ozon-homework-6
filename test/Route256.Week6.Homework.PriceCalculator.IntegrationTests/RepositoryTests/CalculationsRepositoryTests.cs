@@ -2,14 +2,14 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Models;
-using Route256.Week5.Workshop.PriceCalculator.IntegrationTests.Fixtures;
-using Route256.Week5.Workshop.TestingInfrastructure.Creators;
-using Route256.Week5.Workshop.TestingInfrastructure.Fakers;
+using Route256.Week6.Homework.PriceCalculator.Dal.Models;
 using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.IntegrationTests.Fixtures;
+using Route256.Week6.Homework.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.TestingInfrastructure.Fakers;
 using Xunit;
 
-namespace Route256.Week5.Workshop.PriceCalculator.IntegrationTests.RepositoryTests;
+namespace Route256.Week6.Homework.PriceCalculator.IntegrationTests.RepositoryTests;
 
 [Collection(nameof(TestFixture))]
 public class CalculationsRepositoryTests
@@ -17,7 +17,7 @@ public class CalculationsRepositoryTests
     private readonly double _requiredDoublePrecision = 0.00001d;
     private readonly decimal _requiredDecimalPrecision = 0.00001m;
     private readonly TimeSpan _requiredDateTimePrecision = TimeSpan.FromMilliseconds(100);
-    
+
     private readonly ICalculationRepository _calculationRepository;
 
     public CalculationsRepositoryTests(TestFixture fixture)
@@ -38,7 +38,7 @@ public class CalculationsRepositoryTests
             .Select(x => x.WithUserId(userId)
                 .WithAt(now))
             .ToArray();
-        
+
         // Act
         var calculationIds = await _calculationRepository.Add(calculations, default);
 
@@ -46,7 +46,7 @@ public class CalculationsRepositoryTests
         calculationIds.Should().HaveCount(count);
         calculationIds.Should().OnlyContain(x => x > 0);
     }
-    
+
     [Fact]
     public async Task Query_SingleCalculation_Success()
     {
@@ -59,13 +59,13 @@ public class CalculationsRepositoryTests
                 .WithAt(now))
             .ToArray();
         var expected = calculations.Single();
-        
+
         var calculationId = (await _calculationRepository.Add(calculations, default))
             .Single();
 
         // Act
         var foundCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, 1, 0), 
+            new CalculationHistoryQueryModel(userId, 1, 0),
             default);
 
         // Asserts
@@ -80,11 +80,11 @@ public class CalculationsRepositoryTests
         calculation.TotalVolume.Should().BeApproximately(expected.TotalVolume, _requiredDoublePrecision);
         calculation.TotalWeight.Should().BeApproximately(expected.TotalWeight, _requiredDoublePrecision);
     }
-    
+
     [Theory]
-    [InlineData(3,  2, 3)]
-    [InlineData(1,  6, 1)]
-    [InlineData(2,  8, 2)]
+    [InlineData(3, 2, 3)]
+    [InlineData(1, 6, 1)]
+    [InlineData(2, 8, 2)]
     [InlineData(3, 10, 0)]
     public async Task Query_CalculationsInRange_Success(int take, int skip, int expectedCount)
     {
@@ -100,17 +100,17 @@ public class CalculationsRepositoryTests
         await _calculationRepository.Add(calculations, default);
 
         var allCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, 100, 0), 
+            new CalculationHistoryQueryModel(userId, 100, 0),
             default);
-        
+
         var expected = allCalculations
             .OrderByDescending(x => x.At)
             .Skip(skip)
             .Take(take);
-        
+
         // Act
         var foundCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, take, skip), 
+            new CalculationHistoryQueryModel(userId, take, skip),
             default);
 
         // Asserts
@@ -121,7 +121,7 @@ public class CalculationsRepositoryTests
             foundCalculations.Should().BeEquivalentTo(expected);
         }
     }
-    
+
     [Fact]
     public async Task Query_AllCalculations_Success()
     {
@@ -139,7 +139,7 @@ public class CalculationsRepositoryTests
 
         // Act
         var foundCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(userId, 100, 0), 
+            new CalculationHistoryQueryModel(userId, 100, 0),
             default);
 
         // Assert
@@ -148,7 +148,7 @@ public class CalculationsRepositoryTests
         foundCalculations.Should().OnlyContain(x => calculationIds.Contains(x.Id));
         foundCalculations.Should().BeInDescendingOrder(x => x.At);
     }
-    
+
     [Fact]
     public async Task Query_Calculations_ReturnsEmpty_WhenForWrongUser()
     {
@@ -167,7 +167,7 @@ public class CalculationsRepositoryTests
 
         // Act
         var foundCalculations = await _calculationRepository.Query(
-            new CalculationHistoryQueryModel(anotherUserId, 100, 0), 
+            new CalculationHistoryQueryModel(anotherUserId, 100, 0),
             default);
 
         // Assert

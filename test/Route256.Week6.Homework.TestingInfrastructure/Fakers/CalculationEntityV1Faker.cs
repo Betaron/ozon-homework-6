@@ -2,7 +2,7 @@ using AutoBogus;
 using Bogus;
 using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
 
-namespace Route256.Week5.Workshop.TestingInfrastructure.Fakers;
+namespace Route256.Week6.Homework.TestingInfrastructure.Fakers;
 
 public static class CalculationEntityV1Faker
 {
@@ -25,42 +25,42 @@ public static class CalculationEntityV1Faker
     }
 
     public static CalculationEntityV1 WithId(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         long id)
     {
         return src with { Id = id };
     }
-    
+
     public static CalculationEntityV1 WithUserId(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         long userId)
     {
         return src with { UserId = userId };
     }
-    
+
     public static CalculationEntityV1 WithTotalVolume(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         double totalVolume)
     {
         return src with { TotalVolume = totalVolume };
     }
-    
+
     public static CalculationEntityV1 WithTotalWeight(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         double totalWeight)
     {
         return src with { TotalWeight = totalWeight };
     }
-    
+
     public static CalculationEntityV1 WithPrice(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         decimal price)
     {
         return src with { Price = price };
     }
-    
+
     public static CalculationEntityV1 WithAt(
-        this CalculationEntityV1 src, 
+        this CalculationEntityV1 src,
         DateTimeOffset at)
     {
         return src with { At = at };

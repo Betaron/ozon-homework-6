@@ -1,13 +1,13 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading;
 using System.Transactions;
 using Moq;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
 using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
 using Route256.Week6.Homework.PriceCalculator.Dal.Models;
 using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Comparers;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.Extensions;
 
 public static class CalculationRepositoryExtensions
 {
@@ -16,13 +16,13 @@ public static class CalculationRepositoryExtensions
         long[] ids)
     {
         repository.Setup(p =>
-                p.Add(It.IsAny<CalculationEntityV1[]>(), 
+                p.Add(It.IsAny<CalculationEntityV1[]>(),
                     It.IsAny<CancellationToken>()))
             .ReturnsAsync(ids);
 
         return repository;
     }
-    
+
     public static Mock<ICalculationRepository> SetupCreateTransactionScope(
         this Mock<ICalculationRepository> repository)
     {
@@ -32,13 +32,13 @@ public static class CalculationRepositoryExtensions
 
         return repository;
     }
-    
+
     public static Mock<ICalculationRepository> SetupQueryCalculation(
         this Mock<ICalculationRepository> repository,
         CalculationEntityV1[] calculations)
     {
         repository.Setup(p =>
-                p.Query(It.IsAny<CalculationHistoryQueryModel>(), 
+                p.Query(It.IsAny<CalculationHistoryQueryModel>(),
                         It.IsAny<CancellationToken>()))
             .ReturnsAsync(calculations);
 
@@ -57,7 +57,7 @@ public static class CalculationRepositoryExtensions
 
         return repository;
     }
-    
+
     public static Mock<ICalculationRepository> VerifyQueryWasCalledOnce(
         this Mock<ICalculationRepository> repository,
         CalculationHistoryQueryModel query)
@@ -67,10 +67,10 @@ public static class CalculationRepositoryExtensions
                     It.Is<CalculationHistoryQueryModel>(x => x == query),
                     It.IsAny<CancellationToken>()),
             Times.Once);
-        
+
         return repository;
     }
-    
+
     public static Mock<ICalculationRepository> VerifyCreateTransactionScopeWasCalledOnce(
         this Mock<ICalculationRepository> repository,
         IsolationLevel isolationLevel)
@@ -79,7 +79,7 @@ public static class CalculationRepositoryExtensions
                 p.CreateTransactionScope(
                     It.Is<IsolationLevel>(x => x == isolationLevel)),
             Times.Once);
-        
+
         return repository;
     }
 }
