@@ -1,6 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using System.Threading.Channels;
 using Confluent.Kafka;
 using FluentValidation;
 using MediatR;
@@ -19,20 +18,12 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 {
     private readonly IDisposable? _topicsOptionsChangeListner;
 
-    private readonly Channel<ConsumeResult<long, GoodRequest>> _goodPropertiesChanel =
-        Channel.CreateUnbounded<ConsumeResult<long, GoodRequest>>(
-            new UnboundedChannelOptions()
-            {
-                SingleReader = true,
-                SingleWriter = true,
-            });
-
     private readonly InteractiveConsumer
         <long, GoodRequest, GoodsPropertiesConsumerOptions> _goodPropertiesConsumer;
     private readonly InteractiveProducer
         <long, GoodPriceResponse, DeliveryPriceProducerOptions> _deliveryPriceProducer;
 
-    private IProducer<byte[], byte[]> _rawGoodPropertiesDlqProducer;
+    private readonly IProducer<byte[], byte[]> _rawGoodPropertiesDlqProducer;
 
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<DeliveryPriceCalculatorHostedService> _logger;
@@ -82,97 +73,32 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        await Console.Out.WriteLineAsync("DeliveryPriceCalculatorHostedService starting");
+
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var consumeTask = ConsumeGoodsProperties(stoppingToken);
+        _goodPropertiesConsumer.Get().Subscribe(GoodPropertiesTopic);
 
-        await foreach (var result in _goodPropertiesChanel.Reader.ReadAllAsync(stoppingToken))
+        await Task.Run(async () =>
         {
-            var request = result.Message.Value;
-            var command = new CalculateDeliveryPriceWithDlqCommand(
-                result.Message.Key,
-                new GoodModel(
-                    request.GoodId,
-                    new GoodPropertiesModel(
-                        request.Height,
-                        request.Length,
-                        request.Width,
-                        request.Width)));
-            try
-            {
-                var price = await mediator.Send(command, stoppingToken);
-
-                await _deliveryPriceProducer.QuicProduce(
-                    new GoodPriceResponse(
-                        price.GoodId,
-                        price.Price),
-                    stoppingToken);
-
-                _logger.LogInformation("Calculate and produce success.");
-            }
-            catch (ValidationException validationEx)
-            {
-                var sb = new StringBuilder();
-                foreach (var item in validationEx.Errors)
-                {
-                    sb.AppendLine(item.ErrorMessage);
-                }
-                _logger.LogWarning("Consume invalid data.\n" +
-                    "Invalid message was produced in dlq." +
-                    "ValidationErrors:\n" +
-                    sb);
-            }
-            catch (Exception ProduceEx)
-                when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
-            {
-                _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
-                            $"{ProduceEx.Message}" +
-                            ProduceEx.StackTrace);
-                continue;
-            }
-
-            _goodPropertiesConsumer.Get().Commit(result);
-        }
-
-        await consumeTask;
-        Dispose();
-    }
-
-    public override void Dispose()
-    {
-        _goodPropertiesConsumer.Dispose();
-        _deliveryPriceProducer.Dispose();
-        _topicsOptionsChangeListner?.Dispose();
-
-        _goodPropertiesChanel.Writer.Complete();
-        base.Dispose();
-    }
-
-    private Task ConsumeGoodsProperties(CancellationToken token)
-    {
-        return Task.Factory.StartNew(async () =>
-        {
-            _goodPropertiesConsumer.Get().Subscribe(GoodPropertiesTopic);
-            var channelWriter = _goodPropertiesChanel.Writer;
-
-            while (!token.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var result = _goodPropertiesConsumer.Get().Consume(token);
+                    var result = _goodPropertiesConsumer.Get().Consume(stoppingToken);
 
-                    if (!channelWriter.TryWrite(result))
-                    {
-                        await channelWriter.WriteAsync(result);
-                    }
+                    await CalculatePrice(
+                        result,
+                        mediator,
+                        stoppingToken);
                 }
                 catch (ConsumeException ConsumeEx)
                     when (ConsumeEx.InnerException is JsonException or ArgumentException)
                 {
                     var result = ConsumeEx.ConsumerRecord;
 
-                    if (await ProduceCorruptedIntoDlq(result, token))
+                    if (await ProduceCorruptedIntoDlq(result, stoppingToken))
                     {
                         _logger.LogWarning($"Consume falure: {ConsumeEx.InnerException?.GetType()}\n" +
                         $"{ConsumeEx.InnerException?.Message}\n" +
@@ -187,7 +113,68 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                     break;
                 }
             }
-        }).Unwrap();
+        });
+
+        Dispose();
+    }
+
+    public override void Dispose()
+    {
+        _goodPropertiesConsumer.Dispose();
+        _deliveryPriceProducer.Dispose();
+        _topicsOptionsChangeListner?.Dispose();
+        base.Dispose();
+    }
+
+    private async Task CalculatePrice(
+        ConsumeResult<long, GoodRequest> result,
+        IMediator mediator,
+        CancellationToken token)
+    {
+        var request = result.Message.Value;
+        var command = new CalculateDeliveryPriceWithDlqCommand(
+            result.Message.Key,
+            new GoodModel(
+                request.GoodId,
+                new GoodPropertiesModel(
+                    request.Height,
+                    request.Length,
+                    request.Width,
+                    request.Width)));
+        try
+        {
+            var price = await mediator.Send(command, token);
+
+            await _deliveryPriceProducer.QuicProduce(
+                new GoodPriceResponse(
+                    price.GoodId,
+                    price.Price),
+                token);
+
+            _logger.LogInformation("Calculate and produce success.");
+        }
+        catch (ValidationException validationEx)
+        {
+            var sb = new StringBuilder();
+            foreach (var item in validationEx.Errors)
+            {
+                sb.AppendLine(item.ErrorMessage);
+            }
+            _logger.LogWarning("Consume invalid data.\n" +
+                "Invalid message was produced in dlq." +
+                "ValidationErrors:\n" +
+                sb);
+        }
+        catch (Exception ProduceEx)
+            when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
+        {
+            _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
+                        $"{ProduceEx.Message}" +
+                        ProduceEx.StackTrace);
+            return;
+        }
+
+        _goodPropertiesConsumer.Get().Commit(result);
     }
 
     private async Task<bool> ProduceCorruptedIntoDlq(
