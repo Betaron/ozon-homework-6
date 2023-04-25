@@ -1,7 +1,9 @@
 using FluentValidation.AspNetCore;
-using Route256.Week5.Workshop.PriceCalculator.Api.NamingPolicies;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Extensions;
+using Route256.Week6.Homework.PriceCalculator.BackgroundServices.Extensions;
+using Route256.Week6.Homework.PriceCalculator.BackgroundServices.HostedServices;
+using Route256.Week6.Homework.PriceCalculator.Bll.Extensions;
+using Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
+using Route256.Week6.Homework.PriceCalculator.Dal.Utills;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,12 +30,15 @@ services.AddFluentValidation(conf =>
     conf.AutomaticValidationEnabled = true;
 });
 
+services.AddHostedService<DeliveryPriceCalculatorHostedService>();
 
 //add dependencies
 services
     .AddBll()
+    .AddKafkaOptions(builder.Configuration)
     .AddDalInfrastructure(builder.Configuration)
-    .AddDalRepositories();
+    .AddDalRepositories()
+    .AddHostedServices();
 
 var app = builder.Build();
 

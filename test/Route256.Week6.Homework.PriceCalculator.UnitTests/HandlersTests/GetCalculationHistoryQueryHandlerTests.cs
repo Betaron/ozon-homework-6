@@ -1,13 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Builders;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
-using Route256.Week5.Workshop.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Builders;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Extensions;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Fakers;
+using Route256.Week6.Homework.TestingInfrastructure.Creators;
 using Xunit;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.HandlersTests;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.HandlersTests;
 
 public class GetCalculationHistoryQueryHandlerTests
 {

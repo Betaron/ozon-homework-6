@@ -1,7 +1,7 @@
-using Route256.Week5.Workshop.PriceCalculator.Bll.Commands;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Exceptions;
+using Route256.Week6.Homework.PriceCalculator.Bll.Commands;
+using Route256.Week6.Homework.PriceCalculator.Bll.Exceptions;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Bll.Extensions;
+namespace Route256.Week6.Homework.PriceCalculator.Bll.Extensions;
 
 public static class Ensurers
 {

@@ -2,7 +2,7 @@ using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Extensions;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
 
 public static class HostExtensions
 {

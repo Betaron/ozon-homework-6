@@ -2,15 +2,15 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Exceptions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Builders;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
-using Route256.Week5.Workshop.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.PriceCalculator.Bll.Exceptions;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Builders;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Extensions;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Fakers;
+using Route256.Week6.Homework.TestingInfrastructure.Creators;
 using Xunit;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.HandlersTests;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.HandlersTests;
 
 public class CalculateDeliveryPriceCommandHandlerTests
 {
@@ -36,7 +36,7 @@ public class CalculateDeliveryPriceCommandHandlerTests
             .SetupSaveCalculation(calculationId);
 
         var handler = builder.Build();
-        
+
         //act
         var result = await handler.Handle(command, default);
 
@@ -45,13 +45,13 @@ public class CalculateDeliveryPriceCommandHandlerTests
             .VerifySaveCalculationWasCalledOnce(calculationModel)
             .VerifyCalculatePriceByVolumeWasCalledOnce(calculationModel.Goods)
             .VerifyCalculatePriceByWeightWasCalledOnce(calculationModel.Goods);
-        
+
         handler.VerifyNoOtherCalls();
 
         result.CalculationId.Should().Be(calculationId);
         result.Price.Should().Be(calculationModel.Price);
     }
-    
+
     [Fact]
     public async Task Handle_ResultPriceIsMaxOfTwo()
     {
@@ -60,39 +60,39 @@ public class CalculateDeliveryPriceCommandHandlerTests
         var volume = Create.RandomDouble();
         var weight = Create.RandomDouble();
         var maxPrice = Create.RandomDecimal();
-        
+
         var command = CalculateDeliveryPriceCommandFaker.Generate()
             .WithUserId(userId);
-        
+
         var builder = new CalculateDeliveryPriceHandlerBuilder();
         builder.CalculationService
             .SetupCalculatePriceByWeight(weight, maxPrice)
             .SetupCalculatePriceByVolume(volume, maxPrice - 0.001m);
 
         var handler = builder.Build();
-        
+
         //act
         var result = await handler.Handle(command, default);
 
         //asserts
         result.Price.Should().Be(maxPrice);
     }
-    
+
     [Fact]
     public async Task Handle_ThrowsWhenNoGoods()
     {
         //arrange
         var command = CalculateDeliveryPriceCommandFaker.Generate()
-            .WithGoods(Array.Empty<GoodModel>());
-        
+            .WithGoods(Array.Empty<GoodPropertiesModel>());
+
         var builder = new CalculateDeliveryPriceHandlerBuilder();
         var handler = builder.Build();
-        
+
         //act
         var act = () => handler.Handle(command, default);
 
         //asserts
         await Assert.ThrowsAsync<GoodsNotFoundException>(act);
     }
-    
+
 }

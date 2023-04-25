@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
     price-calculator-local:
         image: postgres
@@ -10,14 +10,6 @@ services:
             POSTGRES_PASSWORD: "123456"
         ports:
             - "15432:5432"
-
-    zookeeper:
-        image: bitnami/zookeeper
-        ports:
-            - "2181:2181"
-        environment:
-            ALLOW_ANONYMOUS_LOGIN: "yes"
-
     kafka:
         image: wurstmeister/kafka
         depends_on:
@@ -29,10 +21,30 @@ services:
             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
             KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
             KAFKA_CREATE_TOPICS: >-
-                good_price_calc_requests:2:1,
-                good_price_calc:2:1,
-                good_price_calc_requests_dlq:2:1
+              good_price_calc_requests:2:1,
+              good_price_calc:2:1,
+              good_price_calc_requests_dlq:2:1
         ports:
             - "9092:9092"
         expose:
             - 9093
+            - 9092
+    zookeeper:
+        image: zookeeper:latest
+        ports:
+          - 2181:2181
+    kafka-ui:
+        image: provectuslabs/kafka-ui
+        depends_on:
+          - kafka
+          - zookeeper
+        environment:
+          DYNAMIC_CONFIG_ENABLED: true
+          KAFKA_CLUSTERS_0_NAME: "local"
+          KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+          AUTH_TYPE: "DISABLED"
+          MANAGEMENT_HEALTH_LDAP_ENABLED: "FALSE"
+        ports:
+          - 8080:8080
+        expose:
+          - 8080

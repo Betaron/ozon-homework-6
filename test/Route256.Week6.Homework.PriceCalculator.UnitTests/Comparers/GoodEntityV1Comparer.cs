@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.Comparers;
 
 public class GoodEntityV1Comparer : IEqualityComparer<GoodEntityV1>
 {

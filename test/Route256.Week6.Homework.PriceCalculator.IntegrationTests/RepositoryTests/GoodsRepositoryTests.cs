@@ -1,13 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
-using Route256.Week5.Workshop.PriceCalculator.IntegrationTests.Fixtures;
-using Route256.Week5.Workshop.TestingInfrastructure.Creators;
-using Route256.Week5.Workshop.TestingInfrastructure.Fakers;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.IntegrationTests.Fixtures;
+using Route256.Week6.Homework.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.TestingInfrastructure.Fakers;
 using Xunit;
 
-namespace Route256.Week5.Workshop.PriceCalculator.IntegrationTests.RepositoryTests;
+namespace Route256.Week6.Homework.PriceCalculator.IntegrationTests.RepositoryTests;
 
 [Collection(nameof(TestFixture))]
 public class GoodsRepositoryTests
@@ -28,7 +28,7 @@ public class GoodsRepositoryTests
     {
         // Arrange
         var userId = Create.RandomId();
-        
+
         var goods = GoodEntityV1Faker.Generate(count)
             .Select(x => x.WithUserId(userId))
             .ToArray();
@@ -40,13 +40,13 @@ public class GoodsRepositoryTests
         goodIds.Should().HaveCount(count);
         goodIds.Should().OnlyContain(x => x > 0);
     }
-    
+
     [Fact]
     public async Task Query_Goods_Success()
     {
         // Arrange
         var userId = Create.RandomId();
-        
+
         var goods = GoodEntityV1Faker.Generate(10)
             .Select(x => x.WithUserId(userId))
             .ToArray();
@@ -62,13 +62,13 @@ public class GoodsRepositoryTests
         foundGoods.Should().OnlyContain(x => x.UserId == userId);
         foundGoods.Should().OnlyContain(x => goodIds.Contains(x.Id));
     }
-    
+
     [Fact]
     public async Task Query_SingleGood_Success()
     {
         // Arrange
         var userId = Create.RandomId();
-        
+
         var goods = GoodEntityV1Faker.Generate()
             .Select(x => x.WithUserId(userId))
             .ToArray();
@@ -91,14 +91,14 @@ public class GoodsRepositoryTests
         good.Length.Should().BeApproximately(expected.Length, _requiredDoublePrecision);
         good.Weight.Should().BeApproximately(expected.Weight, _requiredDoublePrecision);
     }
-    
+
     [Fact]
     public async Task Query_Goods_ReturnsEmpty_WhenForWrongUser()
     {
         // Arrange
         var userId = Create.RandomId();
         var anotherUserId = Create.RandomId();
-        
+
         var goods = GoodEntityV1Faker.Generate(10)
             .Select(x => x.WithUserId(userId))
             .ToArray();

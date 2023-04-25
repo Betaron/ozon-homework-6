@@ -1,4 +1,4 @@
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Models;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Models;
 
 public record CalculationHistoryQueryModel(
     long UserId,

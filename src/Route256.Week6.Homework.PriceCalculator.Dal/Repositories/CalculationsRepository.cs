@@ -1,11 +1,11 @@
 using Dapper;
 using Microsoft.Extensions.Options;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Models;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Settings;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Models;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Settings;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Repositories;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Repositories;
 
 public class CalculationRepository : BaseRepository, ICalculationRepository
 {
@@ -13,9 +13,9 @@ public class CalculationRepository : BaseRepository, ICalculationRepository
         IOptions<DalOptions> dalSettings) : base(dalSettings.Value)
     {
     }
-    
+
     public async Task<long[]> Add(
-        CalculationEntityV1[] entityV1, 
+        CalculationEntityV1[] entityV1,
         CancellationToken token)
     {
         const string sqlQuery = @"
@@ -24,19 +24,19 @@ select user_id, good_ids, total_volume, total_weight, price, at
   from UNNEST(@Calculations)
 returning id;
 ";
-        
+
         var sqlQueryParams = new
         {
             Calculations = entityV1
         };
-        
+
         await using var connection = await GetAndOpenConnection();
         var ids = await connection.QueryAsync<long>(
             new CommandDefinition(
                 sqlQuery,
                 sqlQueryParams,
                 cancellationToken: token));
-        
+
         return ids
             .ToArray();
     }
@@ -58,12 +58,12 @@ select id
  order by at desc
  limit @Limit offset @Offset
 ";
-        
+
         var sqlQueryParams = new
         {
-            UserId = query.UserId,
-            Limit = query.Limit,
-            Offset = query.Offset
+            query.UserId,
+            query.Limit,
+            query.Offset
         };
 
         await using var connection = await GetAndOpenConnection();
@@ -72,7 +72,7 @@ select id
                 sqlQuery,
                 sqlQueryParams,
                 cancellationToken: token));
-        
+
         return calculations
             .ToArray();
     }

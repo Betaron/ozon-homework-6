@@ -1,10 +1,10 @@
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services.Interfaces;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Entities;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Models;
-using Route256.Week5.Workshop.PriceCalculator.Dal.Repositories.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services.Interfaces;
+using Route256.Week6.Homework.PriceCalculator.Dal.Entities;
+using Route256.Week6.Homework.PriceCalculator.Dal.Models;
+using Route256.Week6.Homework.PriceCalculator.Dal.Repositories.Interfaces;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Bll.Services;
+namespace Route256.Week6.Homework.PriceCalculator.Bll.Services;
 
 public class CalculationService : ICalculationService
 {
@@ -12,16 +12,20 @@ public class CalculationService : ICalculationService
     public const decimal WeightToPriceRatio = 1.34m;
 
     private readonly ICalculationRepository _calculationRepository;
+    private readonly ICalculationsDlqKafkaRepository _calculationDlqKafkaRepository;
+
     private readonly IGoodsRepository _goodsRepository;
 
     public CalculationService(
         ICalculationRepository calculationRepository,
-        IGoodsRepository goodsRepository)
+        IGoodsRepository goodsRepository,
+        ICalculationsDlqKafkaRepository calculationDlqKafkaRepository)
     {
         _calculationRepository = calculationRepository;
         _goodsRepository = goodsRepository;
+        _calculationDlqKafkaRepository = calculationDlqKafkaRepository;
     }
-    
+
     public async Task<long> SaveCalculation(
         SaveCalculationModel data,
         CancellationToken cancellationToken)
@@ -36,7 +40,7 @@ public class CalculationService : ICalculationService
                 Width = x.Width
             })
             .ToArray();
-        
+
         var calculation = new CalculationEntityV1
         {
             UserId = data.UserId,
@@ -45,19 +49,33 @@ public class CalculationService : ICalculationService
             Price = data.Price,
             At = DateTimeOffset.UtcNow
         };
-        
+
         using var transaction = _calculationRepository.CreateTransactionScope();
         var goodIds = await _goodsRepository.Add(goods, cancellationToken);
 
-        calculation = calculation with {GoodIds = goodIds};
-        var calculationIds = await _calculationRepository.Add(new[] {calculation}, cancellationToken);
+        calculation = calculation with { GoodIds = goodIds };
+        var calculationIds = await _calculationRepository.Add(new[] { calculation }, cancellationToken);
         transaction.Complete();
 
         return calculationIds.Single();
     }
-    
+
+    public Task SaveInvalidRequestInDlq(long key, GoodModel goodModel, CancellationToken cancellationToken)
+    {
+        var entity = new DlqGoodEntityV1
+        {
+            Id = goodModel.Id,
+            Height = goodModel.Properties.Height,
+            Weight = goodModel.Properties.Weight,
+            Length = goodModel.Properties.Length,
+            Width = goodModel.Properties.Width,
+        };
+
+        return _calculationDlqKafkaRepository.Produce(key, entity, cancellationToken);
+    }
+
     public decimal CalculatePriceByVolume(
-        GoodModel[] goods,
+        GoodPropertiesModel[] goods,
         out double volume)
     {
         volume = goods
@@ -65,9 +83,9 @@ public class CalculationService : ICalculationService
 
         return (decimal)volume * VolumeToPriceRatio;
     }
-    
+
     public decimal CalculatePriceByWeight(
-        GoodModel[] goods,
+        GoodPropertiesModel[] goods,
         out double weight)
     {
         weight = goods

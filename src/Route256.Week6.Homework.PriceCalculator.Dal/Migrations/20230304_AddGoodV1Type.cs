@@ -1,6 +1,6 @@
 using FluentMigrator;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Dal.Migrations;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Migrations;
 
 [Migration(20230304, TransactionBehavior.None)]
 public class AddGoodTypeV1 : Migration

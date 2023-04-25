@@ -1,7 +1,7 @@
 using System.Text.Json;
-using Route256.Week5.Workshop.PriceCalculator.Api.Extensions;
+using Route256.Week6.Homework.PriceCalculator.Dal.Extensions;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Api.NamingPolicies;
+namespace Route256.Week6.Homework.PriceCalculator.Dal.Utills;
 
 public class SnakeCaseNamingPolicy : JsonNamingPolicy
 {

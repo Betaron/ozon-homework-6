@@ -1,12 +1,12 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Route256.Week5.Workshop.PriceCalculator.Api.Requests.V1;
-using Route256.Week5.Workshop.PriceCalculator.Api.Responses.V1;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Commands;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Queries;
+using Route256.Week6.Homework.PriceCalculator.Api.Requests.V1;
+using Route256.Week6.Homework.PriceCalculator.Api.Responses.V1;
+using Route256.Week6.Homework.PriceCalculator.Bll.Commands;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Queries;
 
-namespace Route256.Week5.Workshop.PriceCalculator.Api.Controllers.V1;
+namespace Route256.Week6.Homework.PriceCalculator.Api.Controllers.V1;
 
 [ApiController]
 [Route("/v1/delivery-prices")]
@@ -19,7 +19,7 @@ public class DeliveryPricesController : ControllerBase
     {
         _mediator = mediator;
     }
-    
+
     /// <summary>
     /// Метод расчета стоимости доставки на основе объема товаров
     /// или веса товара. Окончательная стоимость принимается как наибольшая
@@ -33,20 +33,20 @@ public class DeliveryPricesController : ControllerBase
         var command = new CalculateDeliveryPriceCommand(
             request.UserId,
             request.Goods
-                .Select(x => new GoodModel(
+                .Select(x => new GoodPropertiesModel(
                     x.Height,
                     x.Length,
                     x.Width,
                     x.Weight))
                 .ToArray());
         var result = await _mediator.Send(command, ct);
-        
+
         return new CalculateResponse(
             result.CalculationId,
             result.Price);
     }
-    
-    
+
+
     /// <summary>
     /// Метод получения истории вычисления
     /// </summary>

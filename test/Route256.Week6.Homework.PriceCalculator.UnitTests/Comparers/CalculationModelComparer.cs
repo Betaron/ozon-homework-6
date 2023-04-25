@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Models;
+using Route256.Week6.Homework.PriceCalculator.Bll.Models;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.Comparers;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.Comparers;
 
 public class CalculationModelComparer : IEqualityComparer<SaveCalculationModel>
 {
     private const double tolerance = 1e-8;
-    
+
     public bool Equals(SaveCalculationModel? x, SaveCalculationModel? y)
     {
         if (x is null && y is null)
@@ -16,7 +16,7 @@ public class CalculationModelComparer : IEqualityComparer<SaveCalculationModel>
             return true;
         }
 
-        if ((x is null && y is not null) || (x is not null && y is null))
+        if (x is null && y is not null || x is not null && y is null)
         {
             return false;
         }
@@ -30,9 +30,9 @@ public class CalculationModelComparer : IEqualityComparer<SaveCalculationModel>
 
     public int GetHashCode(SaveCalculationModel obj)
     {
-        return HashCode.Combine(obj.UserId, 
-            obj.Price, 
-            obj.TotalVolume, 
+        return HashCode.Combine(obj.UserId,
+            obj.Price,
+            obj.TotalVolume,
             obj.TotalWeight,
             obj.Goods);
     }

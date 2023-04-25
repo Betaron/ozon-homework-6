@@ -2,15 +2,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using FluentAssertions;
-using Route256.Week5.Workshop.PriceCalculator.Bll.Services;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Builders;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Extensions;
-using Route256.Week5.Workshop.PriceCalculator.UnitTests.Fakers;
-using Route256.Week5.Workshop.TestingInfrastructure.Creators;
-using Route256.Week5.Workshop.TestingInfrastructure.Fakers;
+using Route256.Week6.Homework.PriceCalculator.Bll.Services;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Builders;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Extensions;
+using Route256.Week6.Homework.PriceCalculator.UnitTests.Fakers;
+using Route256.Week6.Homework.TestingInfrastructure.Creators;
+using Route256.Week6.Homework.TestingInfrastructure.Fakers;
 using Xunit;
 
-namespace Route256.Week5.Workshop.PriceCalculator.UnitTests.ServicesTests;
+namespace Route256.Week6.Homework.PriceCalculator.UnitTests.ServicesTests;
 
 public class CalculationServiceTests
 {
@@ -19,13 +19,13 @@ public class CalculationServiceTests
     {
         // arrange
         const int goodsCount = 5;
-        
+
         var userId = Create.RandomId();
         var calculationId = Create.RandomId();
-        
+
         var goodModels = GoodModelFaker.Generate(goodsCount)
             .ToArray();
-        
+
         var goods = goodModels
             .Select(x => GoodEntityV1Faker.Generate().Single()
                 .WithUserId(userId)
@@ -41,7 +41,7 @@ public class CalculationServiceTests
             .Single()
             .WithUserId(userId)
             .WithGoods(goodModels);
-        
+
         var calculations = CalculationEntityV1Faker.Generate(1)
             .Select(x => x
                 .WithId(calculationId)
@@ -50,10 +50,10 @@ public class CalculationServiceTests
                 .WithTotalWeight(calculationModel.TotalWeight)
                 .WithTotalVolume(calculationModel.TotalVolume))
             .ToArray();
-        
+
         var builder = new CalculationServiceBuilder();
         builder.CalculationRepository
-            .SetupAddCalculations(new [] { calculationId })
+            .SetupAddCalculations(new[] { calculationId })
             .SetupCreateTransactionScope();
         builder.GoodsRepository
             .SetupAddGoods(goodIds);
@@ -79,7 +79,7 @@ public class CalculationServiceTests
         // arrange
         var goodModels = GoodModelFaker.Generate(5)
             .ToArray();
-        
+
         var builder = new CalculationServiceBuilder();
         var service = builder.Build();
 
@@ -90,14 +90,14 @@ public class CalculationServiceTests
         volume.Should().BeApproximately(goodModels.Sum(x => x.Height * x.Width * x.Length), 1e-9d);
         price.Should().Be((decimal)volume * CalculationService.VolumeToPriceRatio);
     }
-    
+
     [Fact]
     public void CalculatePriceByWeight_Success()
     {
         // arrange
         var goodModels = GoodModelFaker.Generate(5)
             .ToArray();
-        
+
         var builder = new CalculationServiceBuilder();
         var service = builder.Build();
 
@@ -108,7 +108,7 @@ public class CalculationServiceTests
         weight.Should().Be(goodModels.Sum(x => x.Weight));
         price.Should().Be((decimal)weight * CalculationService.WeightToPriceRatio);
     }
-    
+
     [Fact]
     public async Task QueryCalculations_Success()
     {
@@ -117,7 +117,7 @@ public class CalculationServiceTests
 
         var filter = QueryCalculationFilterFaker.Generate()
             .WithUserId(userId);
-        
+
         var calculations = CalculationEntityV1Faker.Generate(5)
             .Select(x => x.WithUserId(userId))
             .ToArray();
@@ -126,7 +126,7 @@ public class CalculationServiceTests
             .WithUserId(userId)
             .WithLimit(filter.Limit)
             .WithOffset(filter.Offset);
-        
+
         var builder = new CalculationServiceBuilder();
         builder.CalculationRepository
             .SetupQueryCalculation(calculations);
@@ -138,7 +138,7 @@ public class CalculationServiceTests
         //asserts
         service.CalculationRepository
             .VerifyQueryWasCalledOnce(queryModel);
-        
+
         service.VerifyNoOtherCalls();
 
         result.Should().NotBeEmpty();
