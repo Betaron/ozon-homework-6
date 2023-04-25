@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using Confluent.Kafka;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +16,6 @@ public class AnomalousPricesDetectorHostedService : BackgroundService, IDisposab
     private readonly IDisposable? _topicsOptionsChangeListner;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<AnomalousPricesDetectorHostedService> _logger;
-
-    private readonly Channel<ConsumeResult<long, GoodPriceDto>> _goodPricesChanel =
-    Channel.CreateUnbounded<ConsumeResult<long, GoodPriceDto>>(
-        new UnboundedChannelOptions()
-        {
-            SingleReader = true,
-            SingleWriter = true,
-        });
 
     private string? _pricesTopic;
     public string? PricesTopic
@@ -66,57 +57,17 @@ public class AnomalousPricesDetectorHostedService : BackgroundService, IDisposab
         using var scope = _serviceScopeFactory.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var consumeTask = ConsumeGoodsPrices(stoppingToken);
+        _deliveryPricesConsumer.Get().Subscribe(PricesTopic);
 
-        await foreach (var result in _goodPricesChanel.Reader.ReadAllAsync(stoppingToken))
+        await Task.Run(async () =>
         {
-            var request = result.Message.Value;
-            var command = new DetectPriceAnomalyCommand(
-                new(
-                    result.Message.Value.GoodId,
-                    result.Message.Value.Price));
-
-            var detected = await mediator.Send(command, stoppingToken);
-
-            if (detected)
-            {
-                _logger.LogInformation("Anomaly was save into Database\n" +
-                    $"{request}");
-            }
-
-            _deliveryPricesConsumer.Get().Commit(result);
-        }
-
-        await consumeTask;
-        Dispose();
-    }
-
-    public override void Dispose()
-    {
-        _topicsOptionsChangeListner?.Dispose();
-        _deliveryPricesConsumer.Dispose();
-        _goodPricesChanel.Writer.Complete();
-
-        base.Dispose();
-    }
-
-    private Task ConsumeGoodsPrices(CancellationToken token)
-    {
-        return Task.Factory.StartNew(async () =>
-        {
-            _deliveryPricesConsumer.Get().Subscribe(PricesTopic);
-            var channelWriter = _goodPricesChanel.Writer;
-
-            while (!token.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var result = _deliveryPricesConsumer.Get().Consume(token);
+                    var result = _deliveryPricesConsumer.Get().Consume(stoppingToken);
 
-                    if (!channelWriter.TryWrite(result))
-                    {
-                        await channelWriter.WriteAsync(result);
-                    }
+                    await DetectAnomaly(result, mediator, stoppingToken);
                 }
                 catch (Exception ex)
                 {
@@ -126,6 +77,37 @@ public class AnomalousPricesDetectorHostedService : BackgroundService, IDisposab
                     break;
                 }
             }
-        }).Unwrap();
+        });
+
+        Dispose();
+    }
+
+    public override void Dispose()
+    {
+        _topicsOptionsChangeListner?.Dispose();
+        _deliveryPricesConsumer.Dispose();
+
+        base.Dispose();
+    }
+
+    private async Task DetectAnomaly(
+        ConsumeResult<long, GoodPriceDto> result,
+        IMediator mediator,
+        CancellationToken token)
+    {
+        var request = result.Message.Value;
+        var command = new DetectPriceAnomalyCommand(
+            new(result.Message.Value.GoodId,
+                result.Message.Value.Price));
+
+        var detected = await mediator.Send(command, token);
+
+        if (detected)
+        {
+            _logger.LogInformation("Anomaly was save into Database\n" +
+                $"{request}");
+        }
+
+        _deliveryPricesConsumer.Get().Commit(result);
     }
 }
