@@ -25,6 +25,7 @@ internal class InteractiveProducer<TKey, TModel, TOptions> : ClientBase, IDispos
 
     public void Dispose()
     {
+        _producer.Flush();
         _producer.Dispose();
     }
 
