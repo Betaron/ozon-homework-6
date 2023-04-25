@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddMediatR(c => c.RegisterServicesFromAssembly(typeof(ServiceCollectionExtensions).Assembly));
         services.AddTransient<ICalculationService, CalculationService>();
+        services.AddScoped<IGoodsService, GoodsService>();
 
         return services;
     }

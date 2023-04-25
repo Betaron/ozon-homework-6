@@ -19,9 +19,9 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
     private readonly IDisposable? _topicsOptionsChangeListner;
 
     private readonly InteractiveConsumer
-        <long, GoodRequest, GoodsPropertiesConsumerOptions> _goodPropertiesConsumer;
+        <long, GoodDto, GoodsPropertiesConsumerOptions> _goodPropertiesConsumer;
     private readonly InteractiveProducer
-        <long, GoodPriceResponse, DeliveryPriceProducerOptions> _deliveryPriceProducer;
+        <long, GoodPriceDto, DeliveryPriceProducerOptions> _deliveryPriceProducer;
 
     private readonly IProducer<byte[], byte[]> _rawGoodPropertiesDlqProducer;
 
@@ -127,7 +127,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
     }
 
     private async Task CalculatePrice(
-        ConsumeResult<long, GoodRequest> result,
+        ConsumeResult<long, GoodDto> result,
         IMediator mediator,
         CancellationToken token)
     {
@@ -146,7 +146,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
             var price = await mediator.Send(command, token);
 
             await _deliveryPriceProducer.QuicProduce(
-                new GoodPriceResponse(
+                new GoodPriceDto(
                     price.GoodId,
                     price.Price),
                 token);
@@ -166,7 +166,7 @@ public class DeliveryPriceCalculatorHostedService : BackgroundService, IDisposab
                 sb);
         }
         catch (Exception ProduceEx)
-            when (ProduceEx is ProduceException<long, GoodPriceResponse> or ArgumentException)
+            when (ProduceEx is ProduceException<long, GoodPriceDto> or ArgumentException)
         {
             _logger.LogError($"Produce error: {ProduceEx.InnerException?.GetType()}\n" +
                         $"{ProduceEx.Message}" +
